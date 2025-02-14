@@ -72,14 +72,26 @@ def build_and_upload_dataframe():
 
     motherduck_token = secrets["tokens"]["motherduck"]
 
-    conn = duckdb.connect(f"md:nba_data?motherduck_token={motherduck_token}")
+    try:
+        conn = duckdb.connect(f"md:nba_data?motherduck_token={motherduck_token}")
 
-    conn.register("teams", final_dataframe)
+        conn.register("teams", final_dataframe)
 
-    conn.sql("CREATE OR REPLACE TABLE teams AS SELECT * FROM teams;")
-    conn.sql("ALTER TABLE nba_data.teams ADD PRIMARY KEY (TEAM_ID);")
+        conn.sql("CREATE OR REPLACE TABLE teams AS SELECT * FROM teams;")
+        conn.sql("ALTER TABLE nba_data.teams ADD PRIMARY KEY (TEAM_ID);")
 
-    conn.close()
+        conn.close()
+    except duckdb.IntegrityError:
+        print(
+            "Integrity error: Possible duplicate primary key or constraint violation."
+        )
+    except duckdb.OperationalError:
+        print("Operational error: Check database connection and MotherDuck token.")
+    except duckdb.ProgrammingError:
+        print("SQL syntax error or incorrect table reference.")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
 
 if __name__ == "__main__":
     build_and_upload_dataframe()
