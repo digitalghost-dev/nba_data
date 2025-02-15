@@ -7,7 +7,7 @@ from nba_api.stats.endpoints import teamdetails
 from nba_api.stats.static.teams import get_teams
 
 
-def get_team_id():
+def get_team_id() -> list[int]:
     nba_teams = get_teams()
     return [team["id"] for team in nba_teams]
 
@@ -74,7 +74,7 @@ def get_team_logo() -> list[str]:
     return team_logo_list
 
 
-def build_and_upload_dataframe():
+def build_and_upload_dataframe() -> None:
     base_dataframe = get_team_details()
     logo_list = get_team_logo()
 
@@ -82,7 +82,7 @@ def build_and_upload_dataframe():
         pl.Series(name="team_logo", values=logo_list)
     )
 
-    with open("./secrets.toml", "r") as f:
+    with open("../../secrets.toml", "r") as f:
         secrets = toml.load(f)
 
     motherduck_token = secrets["tokens"]["motherduck"]
