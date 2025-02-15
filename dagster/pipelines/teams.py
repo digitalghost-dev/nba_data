@@ -44,8 +44,23 @@ def get_team_details() -> pl.DataFrame:
     # Combine all individual team DataFrames into one
     all_teams_dataframe = pl.concat(all_team_data)
 
-    return all_teams_dataframe
+    all_teams_dataframe = all_teams_dataframe.rename(
+        {
+            "TEAM_ID": "team_id",
+            "ABBREVIATION": "abbreviation",
+            "NICKNAME": "nickname",
+            "YEARFOUNDED": "year_founded",
+            "CITY": "city",
+            "ARENA": "arena",
+            "ARENACAPACITY": "arena_capacity",
+            "OWNER": "owner",
+            "GENERALMANAGER": "general_manager",
+            "HEADCOACH": "head_coach",
+            "DLEAGUEAFFILIATION": "league_affiliation",
+         }
+    )
 
+    return all_teams_dataframe
 
 def get_team_logo() -> list[str]:
     logo_url_first = "https://cdn.nba.com/logos/nba/"
@@ -64,7 +79,7 @@ def build_and_upload_dataframe():
     logo_list = get_team_logo()
 
     final_dataframe = base_dataframe.with_columns(
-        pl.Series(name="TEAMLOGO", values=logo_list)
+        pl.Series(name="team_logo", values=logo_list)
     )
 
     with open("./secrets.toml", "r") as f:
