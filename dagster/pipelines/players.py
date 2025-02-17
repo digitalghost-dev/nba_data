@@ -58,12 +58,12 @@ def upload_dataframe():
     motherduck_token = secrets["tokens"]["motherduck"]
 
     try:
-        conn = duckdb.connect(f"md:nba_data?motherduck_token={motherduck_token}")
+        conn = duckdb.connect(f"md:nba_data_staging?motherduck_token={motherduck_token}")
 
         conn.register("players", players_dataframe)
 
         conn.sql("CREATE OR REPLACE TABLE players AS SELECT * FROM players")
-        conn.sql("ALTER TABLE nba_data.players ADD PRIMARY KEY(person_id)")
+        conn.sql("ALTER TABLE nba_data_staging.players ADD PRIMARY KEY(person_id)")
 
         conn.close()
     except duckdb.IntegrityError:
