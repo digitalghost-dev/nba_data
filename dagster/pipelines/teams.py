@@ -93,7 +93,7 @@ def build_and_upload_dataframe() -> None:
         conn.register("teams", final_dataframe)
 
         conn.sql("CREATE OR REPLACE TABLE teams AS SELECT * FROM teams;")
-        conn.sql("ALTER TABLE nba_data.teams ADD PRIMARY KEY (TEAM_ID);")
+        conn.sql("ALTER TABLE nba_data.teams ADD PRIMARY KEY (team_id)")
 
         conn.close()
     except duckdb.IntegrityError:
