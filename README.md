@@ -1,8 +1,8 @@
-<div style="text-align: center; padding-top: 20px;">
+<div align="center">
     <img height="100" width="100" src="https://cdn.simpleicons.org/nba/red" alt="nba logo"/>
 </div>
 
-<div style="text-align: center; padding-top: 20px;">
+<div align="center">
     <a href="https://substack.com/@digitalghostdev" target="_blank">
       <img src="https://img.shields.io/badge/Follow_the_Journey-FFF?style=flat-square&logo=substack&logoColor=FF6719&labelColor=black&color=FF6719" alt="Follow the Journey on Substack">
     </a>
