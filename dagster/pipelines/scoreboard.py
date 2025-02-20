@@ -16,45 +16,41 @@ def get_scoreboard() -> pl.DataFrame:
 
     line_score_data = data_dict["resultSets"][1]
 
-    scoreboard_dataframe = pl.DataFrame(
-        line_score_data["rowSet"], schema=line_score_data["headers"], orient="row"
+    return (
+        pl.DataFrame(line_score_data["rowSet"], schema=line_score_data["headers"], orient="row")
+        .drop("TEAM_CITY_NAME", "TEAM_NAME")
+        .rename(
+            {
+                "GAME_DATE_EST": "game_date_est",
+                "GAME_SEQUENCE": "game_sequence",
+                "GAME_ID": "game_id",
+                "TEAM_ID": "team_id",
+                "TEAM_ABBREVIATION": "team_abbreviation",
+                "TEAM_WINS_LOSSES": "team_wins_losses",
+                "PTS_QTR1": "pts_qtr1",
+                "PTS_QTR2": "pts_qtr2",
+                "PTS_QTR3": "pts_qtr3",
+                "PTS_QTR4": "pts_qtr4",
+                "PTS_OT1": "pts_ot1",
+                "PTS_OT2": "pts_ot2",
+                "PTS_OT3": "pts_ot3",
+                "PTS_OT4": "pts_ot4",
+                "PTS_OT5": "pts_ot5",
+                "PTS_OT6": "pts_ot6",
+                "PTS_OT7": "pts_ot7",
+                "PTS_OT8": "pts_ot8",
+                "PTS_OT9": "pts_ot9",
+                "PTS_OT10": "pts_ot10",
+                "PTS": "points",
+                "FG_PCT": "field_goal_pct",
+                "FT_PCT": "free_throw_pct",
+                "FG3_PCT": "three_point_pct",
+                "AST": "assists",
+                "REB": "rebounds",
+                "TOV": "turnovers",
+            }
+        )
     )
-
-    scoreboard_dataframe = scoreboard_dataframe.rename(
-        {
-            "GAME_DATE_EST": "game_date_est",
-            "GAME_SEQUENCE": "game_sequence",
-            "GAME_ID": "game_id",
-            "TEAM_ID": "team_id",
-            "TEAM_ABBREVIATION": "team_abbreviation",
-            "TEAM_CITY_NAME": "team_city_name",
-            "TEAM_NAME": "team_name",
-            "TEAM_WINS_LOSSES": "team_wins_losses",
-            "PTS_QTR1": "pts_qtr1",
-            "PTS_QTR2": "pts_qtr2",
-            "PTS_QTR3": "pts_qtr3",
-            "PTS_QTR4": "pts_qtr4",
-            "PTS_OT1": "pts_ot1",
-            "PTS_OT2": "pts_ot2",
-            "PTS_OT3": "pts_ot3",
-            "PTS_OT4": "pts_ot4",
-            "PTS_OT5": "pts_ot5",
-            "PTS_OT6": "pts_ot6",
-            "PTS_OT7": "pts_ot7",
-            "PTS_OT8": "pts_ot8",
-            "PTS_OT9": "pts_ot9",
-            "PTS_OT10": "pts_ot10",
-            "PTS": "points",
-            "FG_PCT": "field_goal_pct",
-            "FT_PCT": "free_throw_pct",
-            "FG3_PCT": "three_point_pct",
-            "AST": "assists",
-            "REB": "rebounds",
-            "TOV": "turnovers",
-        }
-    )
-
-    return scoreboard_dataframe
 
 
 def upload_dataframe():
