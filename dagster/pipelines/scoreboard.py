@@ -1,8 +1,9 @@
 import duckdb
 import pendulum
 import polars as pl
-import toml
 from nba_api.stats.endpoints import scoreboardv2
+
+from dagster.pipelines.token import get_motherduck_token
 
 
 def get_scoreboard() -> pl.DataFrame:
@@ -53,13 +54,8 @@ def get_scoreboard() -> pl.DataFrame:
     )
 
 
-def upload_dataframe():
+def upload_dataframe(motherduck_token) -> None:
     scoreboard_dataframe = get_scoreboard()
-
-    with open("../../secrets.toml") as f:
-        secrets = toml.load(f)
-
-    motherduck_token = secrets["tokens"]["motherduck"]
 
     try:
         conn = duckdb.connect(f"md:nba_data_staging?motherduck_token={motherduck_token}")
@@ -82,5 +78,4 @@ def upload_dataframe():
         print(f"Unexpected error: {e}")
 
 
-if __name__ == "__main__":
-    upload_dataframe()
+upload_dataframe(motherduck_token=get_motherduck_token())
