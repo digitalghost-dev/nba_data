@@ -1,12 +1,19 @@
 import duckdb
 import pendulum
 import polars as pl
+from typing import Any
 from nba_api.stats.endpoints import scoreboardv2
 
 from dagster.pipelines.token import get_motherduck_token
 
 
-def get_scoreboard() -> pl.DataFrame:
+def extract_scoreboard() -> dict[str, Any]:
+    """
+    Extracts the scoreboard data from the NBA API for today's games.
+
+    Returns:
+        dict[str, Any]: A dictionary containing scoreboard data retrieved from the API.
+    """
     today = pendulum.now("America/Los_Angeles").to_date_string()
 
     scoreboard = scoreboardv2.ScoreboardV2(
@@ -15,11 +22,38 @@ def get_scoreboard() -> pl.DataFrame:
 
     data_dict = scoreboard.get_dict()
 
-    line_score_data = data_dict["resultSets"][1]
+    scoreboard_dict = data_dict["resultSets"][1]
 
-    return (
-        pl.DataFrame(line_score_data["rowSet"], schema=line_score_data["headers"], orient="row")
-        .drop("TEAM_CITY_NAME", "TEAM_NAME")
+    return scoreboard_dict
+
+
+def transform_scoreboard(scoreboard_data: dict[str, Any]) -> pl.DataFrame:
+    """
+    Transforms the raw scoreboard data into a Polars DataFrame with renamed columns.
+
+    Args:
+        scoreboard_data (dict[str, Any]): Raw JSON-like dictionary containing NBA scoreboard data.
+
+    Returns:
+        pl.DataFrame: A structured Polars DataFrame with cleaned and renamed columns.
+    """
+
+    scoreboard_dataframe = (
+        pl.DataFrame(
+            scoreboard_data["rowSet"], schema=scoreboard_data["headers"], orient="row"
+        )
+        .drop(
+            "TEAM_CITY_NAME",
+            "TEAM_NAME",
+            "PTS_OT3",
+            "PTS_OT4",
+            "PTS_OT5",
+            "PTS_OT6",
+            "PTS_OT7",
+            "PTS_OT8",
+            "PTS_OT9",
+            "PTS_OT10",
+        )
         .rename(
             {
                 "GAME_DATE_EST": "game_date_est",
@@ -34,14 +68,6 @@ def get_scoreboard() -> pl.DataFrame:
                 "PTS_QTR4": "pts_qtr4",
                 "PTS_OT1": "pts_ot1",
                 "PTS_OT2": "pts_ot2",
-                "PTS_OT3": "pts_ot3",
-                "PTS_OT4": "pts_ot4",
-                "PTS_OT5": "pts_ot5",
-                "PTS_OT6": "pts_ot6",
-                "PTS_OT7": "pts_ot7",
-                "PTS_OT8": "pts_ot8",
-                "PTS_OT9": "pts_ot9",
-                "PTS_OT10": "pts_ot10",
                 "PTS": "points",
                 "FG_PCT": "field_goal_pct",
                 "FT_PCT": "free_throw_pct",
@@ -53,12 +79,27 @@ def get_scoreboard() -> pl.DataFrame:
         )
     )
 
+    return scoreboard_dataframe
 
-def upload_dataframe(motherduck_token) -> None:
-    scoreboard_dataframe = get_scoreboard()
 
+def upload_dataframe(scoreboard_dataframe: pl.DataFrame, motherduck_token: str) -> None:
+    """
+    Uploads the given Polars DataFrame to a DuckDB database hosted on MotherDuck.
+
+    Args:
+        scoreboard_dataframe (pl.DataFrame): The transformed scoreboard data to be uploaded.
+        motherduck_token (str): The authentication token for connecting to MotherDuck.
+
+    Raises:
+        duckdb.IntegrityError: If there's a primary key or constraint violation.
+        duckdb.OperationalError: If the database connection or token is invalid.
+        duckdb.ProgrammingError: If there is a SQL syntax error or incorrect table reference.
+        Exception: For any other unexpected errors.
+    """
     try:
-        conn = duckdb.connect(f"md:nba_data_staging?motherduck_token={motherduck_token}")
+        conn = duckdb.connect(
+            f"md:nba_data_staging?motherduck_token={motherduck_token}"
+        )
 
         conn.register("scoreboard", scoreboard_dataframe)
 
@@ -78,4 +119,7 @@ def upload_dataframe(motherduck_token) -> None:
         print(f"Unexpected error: {e}")
 
 
-upload_dataframe(motherduck_token=get_motherduck_token())
+scoreboard_df = transform_scoreboard(scoreboard_data=extract_scoreboard())
+motherduck_token = get_motherduck_token()
+
+upload_dataframe(scoreboard_df, motherduck_token)
