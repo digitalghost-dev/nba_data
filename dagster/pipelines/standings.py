@@ -1,5 +1,3 @@
-import os
-
 import duckdb
 import polars as pl
 from typing import Any
