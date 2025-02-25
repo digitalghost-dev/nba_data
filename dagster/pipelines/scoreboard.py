@@ -12,7 +12,7 @@ def extract_scoreboard() -> dict[str, Any]:
     Extracts the scoreboard data from the NBA API for today's games.
 
     Returns:
-        dict[str, Any]: A dictionary containing scoreboard data retrieved from the API.
+        dict[str, Any]: A dictionary with scoreboard.
     """
     today = pendulum.now("America/Los_Angeles").to_date_string()
 
@@ -27,20 +27,20 @@ def extract_scoreboard() -> dict[str, Any]:
     return scoreboard_dict
 
 
-def transform_scoreboard(scoreboard_data: dict[str, Any]) -> pl.DataFrame:
+def transform_scoreboard(scoreboard_dict: dict[str, Any]) -> pl.DataFrame:
     """
-    Transforms the raw scoreboard data into a Polars DataFrame with renamed columns.
+    Transforms the raw scoreboard data into a Polars DataFrame.
 
     Args:
-        scoreboard_data (dict[str, Any]): Raw JSON-like dictionary containing NBA scoreboard data.
+        scoreboard_dict (dict[str, Any]): Raw JSON-like dictionary containing NBA scoreboard data.
 
     Returns:
-        pl.DataFrame: A structured Polars DataFrame with cleaned and renamed columns.
+        pl.DataFrame: A structured Polars DataFrame with dropped and renamed columns.
     """
 
     scoreboard_dataframe = (
         pl.DataFrame(
-            scoreboard_data["rowSet"], schema=scoreboard_data["headers"], orient="row"
+            scoreboard_dict["rowSet"], schema=scoreboard_dict["headers"], orient="row"
         )
         .drop(
             "TEAM_CITY_NAME",
@@ -87,7 +87,7 @@ def upload_dataframe(scoreboard_dataframe: pl.DataFrame, motherduck_token: str) 
     Uploads the given Polars DataFrame to a DuckDB database hosted on MotherDuck.
 
     Args:
-        scoreboard_dataframe (pl.DataFrame): The transformed scoreboard data to be uploaded.
+        scoreboard_dataframe (pl.DataFrame): The transformed scoreboard dataframe to be uploaded.
         motherduck_token (str): The authentication token for connecting to MotherDuck.
 
     Raises:
@@ -96,6 +96,7 @@ def upload_dataframe(scoreboard_dataframe: pl.DataFrame, motherduck_token: str) 
         duckdb.ProgrammingError: If there is a SQL syntax error or incorrect table reference.
         Exception: For any other unexpected errors.
     """
+
     try:
         conn = duckdb.connect(
             f"md:nba_data_staging?motherduck_token={motherduck_token}"
@@ -119,7 +120,7 @@ def upload_dataframe(scoreboard_dataframe: pl.DataFrame, motherduck_token: str) 
         print(f"Unexpected error: {e}")
 
 
-scoreboard_df = transform_scoreboard(scoreboard_data=extract_scoreboard())
+scoreboard_df = transform_scoreboard(scoreboard_dict=extract_scoreboard())
 motherduck_token = get_motherduck_token()
 
 upload_dataframe(scoreboard_df, motherduck_token)
