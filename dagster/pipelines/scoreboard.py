@@ -69,7 +69,7 @@ def transform_scoreboard(scoreboard_dict: dict[str, Any]) -> pl.DataFrame:
                 "PTS_QTR4": "pts_qtr4",
                 "PTS_OT1": "pts_ot1",
                 "PTS_OT2": "pts_ot2",
-                "PTS": "points",
+                "PTS": "total_points",
                 "FG_PCT": "field_goal_pct",
                 "FT_PCT": "free_throw_pct",
                 "FG3_PCT": "three_point_pct",
