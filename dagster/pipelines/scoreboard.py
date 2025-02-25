@@ -1,7 +1,8 @@
+from typing import Any
+
 import duckdb
 import pendulum
 import polars as pl
-from typing import Any
 from nba_api.stats.endpoints import scoreboardv2
 
 from dagster.pipelines.token import get_motherduck_token

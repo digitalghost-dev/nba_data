@@ -1,6 +1,7 @@
+from typing import Any
+
 import duckdb
 import polars as pl
-from typing import Any
 from nba_api.stats.endpoints import leaguestandingsv3
 
 from dagster.pipelines.token import get_motherduck_token
@@ -19,7 +20,7 @@ def extract_standings() -> dict[str, Any]:
 
     data_dict = standings.get_dict()
 
-    standings_dict= data_dict["resultSets"][0]
+    standings_dict = data_dict["resultSets"][0]
 
     return standings_dict
 
@@ -36,7 +37,9 @@ def transform_standings(standings_dict: dict[str, Any]) -> pl.DataFrame:
     """
 
     standings_dataframe = (
-        pl.DataFrame(standings_dict["rowSet"], schema=standings_dict["headers"], orient="row")
+        pl.DataFrame(
+            standings_dict["rowSet"], schema=standings_dict["headers"], orient="row"
+        )
         .drop("TeamCity", "TeamName")
         .rename(
             {
@@ -153,7 +156,9 @@ def upload_dataframe(standings_dataframe: pl.DataFrame, motherduck_token: str) -
     """
 
     try:
-        conn = duckdb.connect(f"md:nba_data_staging?motherduck_token={motherduck_token}")
+        conn = duckdb.connect(
+            f"md:nba_data_staging?motherduck_token={motherduck_token}"
+        )
 
         conn.register("standings", standings_dataframe)
 
