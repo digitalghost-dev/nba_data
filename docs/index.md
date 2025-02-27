@@ -16,9 +16,10 @@ I also write in more detail about my journey through this project on [Substack](
 
 This documentation is sectioned into different parts that reflect the data engineering life cycle or at leasts tries.
 
-![Data engineering life cycle diagram](data_engineering_life_cycle.png)
+![Data engineering life cycle diagram](media/data_engineering_life_cycle.png)
 
 ---
 
 # Important Links
 * [GitHub Repository](https://github.com/digitalghost-dev/nba_data)
+* [Medium Arctiles](https://medium.com/@digitalghost-dev)
