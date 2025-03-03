@@ -102,7 +102,7 @@ def extract_teams(team_id_list: list[int]) -> list[list[Any]]:
 
 
 def transform_teams(
-    all_teams_list: list[list[Any]], header_details: list[str]
+    all_teams_list: list[list[Any]], header_details: list[str], team_logo_list: list[str]
 ) -> pl.DataFrame:
     """
     Transforms the raw standings data into a Polars DataFrame.
@@ -110,6 +110,7 @@ def transform_teams(
     Args:
         all_teams_list (list[list[Any]]): List of a list of teams and details.
         header_details (list[str]): A list of headers.
+        team_logo_list (list[str]): A list of logo urls.
 
     Returns:
         pl.DataFrame: A structured Polars DataFrame with dropped and renamed columns.
@@ -133,7 +134,7 @@ def transform_teams(
             "HEADCOACH": "head_coach",
             "DLEAGUEAFFILIATION": "league_affiliation",
         }
-    )
+    ).with_columns(pl.Series(name="team_logo", values=team_logo_list))
 
     return teams_dataframe
 
@@ -180,8 +181,9 @@ def main():
     team_id_list = get_team_id()
     all_teams_list = extract_teams(team_id_list)
     header_details = get_headers()
+    team_logo_list = get_team_logo(team_id_list)
 
-    teams_df = transform_teams(all_teams_list, header_details)
+    teams_df = transform_teams(all_teams_list, header_details, team_logo_list)
     motherduck_token = get_motherduck_token()
 
     upload_dataframe(teams_df, motherduck_token)
