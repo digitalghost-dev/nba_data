@@ -7,8 +7,15 @@ dependencies = [
     "polars~=1.22.0",
     "toml~=0.10.2",
     "nba_api~=1.7.0",
-    "streamlit~=1.42.0",
     "ruff>=0.9.6",
+]
+
+[project.optional-dependencies]
+streamlit = [
+    "streamlit~=1.42.0",
+    "duckdb~=1.2.0",
+    "toml~=0.10.2",
+    "polars~=1.22.0",
 ]
 
 [tool.ruff]
