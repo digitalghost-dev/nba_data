@@ -14,6 +14,7 @@ def extract_standings() -> dict[str, Any]:
     Returns:
          dict[str, Any]: A dictionary with standings data.
     """
+
     standings = leaguestandingsv3.LeagueStandingsV3(
         league_id="00", season=2024, season_type="Regular Season"
     )
@@ -140,7 +141,7 @@ def transform_standings(standings_dict: dict[str, Any]) -> pl.DataFrame:
     return standings_dataframe
 
 
-def upload_dataframe(standings_dataframe: pl.DataFrame, motherduck_token: str) -> None:
+def load_dataframe(standings_dataframe: pl.DataFrame, motherduck_token: str) -> None:
     """
     Uploads the given Polars DataFrame to a DuckDB database hosted on MotherDuck.
 

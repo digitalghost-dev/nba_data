@@ -83,7 +83,7 @@ def transform_scoreboard(scoreboard_dict: dict[str, Any]) -> pl.DataFrame:
     return scoreboard_dataframe
 
 
-def upload_dataframe(scoreboard_dataframe: pl.DataFrame, motherduck_token: str) -> None:
+def load_dataframe(scoreboard_dataframe: pl.DataFrame, motherduck_token: str) -> None:
     """
     Uploads the given Polars DataFrame to a DuckDB database hosted on MotherDuck.
 
