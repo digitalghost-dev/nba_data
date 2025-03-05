@@ -3,8 +3,8 @@
 </div>
 
 <div align="center">
-    <a href="https://substack.com/@digitalghostdev" target="_blank">
-      <img src="https://img.shields.io/badge/Follow_the_Journey-FFF?style=flat-square&logo=substack&logoColor=FF6719&labelColor=black&color=FF6719" alt="Follow the Journey on Substack">
+    <a href="https://medium.com/@digitalghost-dev" target="_blank">
+      <img src="https://img.shields.io/badge/Follow_the_Journey-EEE?style=flat-square&logo=medium&logoColor=black&labelColor=EEE&color=000" alt="Follow the Journey on Medium">
     </a>
 </div>
 
